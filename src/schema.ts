@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { regex } from "./utils";
+import { regex } from "@radroots/utils";
 import type { IModelsForm, IModelsQueryBindValue, IModelsSortCreatedAt, IModelsFormErrorTuple, IModelsFormValidationTuple } from "./types";
 
 export const MassUnitSchema = z.union([
@@ -118,4 +118,5 @@ export const location_gcs_sql = `CREATE TABLE IF NOT EXISTS location_gcs (
 export const models_initial_upgrade = [
 	`PRAGMA foreign_keys = ON;`,
 	location_gcs_sql,
+	
 ];
