@@ -22,7 +22,8 @@ export function parse_mass_unit(val: string): MassUnit {
 export const LocationGcsSchema = z.object({
     lat: z.number({ message: "model.location_gcs.schema.lat.required" }).min(-90, { message: "model.location_gcs.schema.lat.min" }).max(90, { message: "model.location_gcs.schema.lat.max" }),
 	lng: z.number({ message: "model.location_gcs.schema.lng.required" }).min(-180, { message: "model.location_gcs.schema.lng.min" }).max(180, { message: "model.location_gcs.schema.lng.max" }),
-	geohash: z.string({ message: "model.location_gcs.schema.geohash.required" })
+	geohash: z.string({ message: "model.location_gcs.schema.geohash.required" }),
+	label: z.string().optional()
 });
 
 export type LocationGcsFields = z.infer<typeof LocationGcsSchema>;
@@ -45,9 +46,9 @@ export const location_gcs_sort: Record<ILocationGcsSort, string> = {
 
 export function parse_location_gcs(obj: any): LocationGcs | undefined {
     if (typeof obj !== 'object' || obj === null) return undefined;
-    const { id, created_at, lat, lng, geohash } = obj;
+    const { id, created_at, lat, lng, geohash, label } = obj;
     if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof lat !== "number") || (typeof lng !== "number") || (typeof geohash !== "string" || !geohash)) return undefined;
-    return { id, created_at, lat, lng, geohash, };
+    return { id, created_at, lat, lng, geohash, label, };
 };
 
 export const parse_location_gcss = ({ values }: { values?: any[] }): LocationGcs[] | undefined => {
@@ -75,13 +76,19 @@ export const location_gcs_form_fields: Record<keyof LocationGcsFormFields, IMode
         validation: regex.alpha,
         charset: regex.alpha,
         optional: false,
+    },
+	label: {
+        validation: regex.alpha,
+        charset: regex.alpha,
+        optional: true,
     }
 };
 
 export const location_gcs_form_vals: Record<keyof LocationGcsFormFields, string> = {
     lat: "",
 	lng: "",
-	geohash: ""
+	geohash: "",
+	label: ""
 };
 
 export const parse_location_gcs_form_keys = (value: string): keyof LocationGcsFormFields | undefined => {
@@ -89,6 +96,7 @@ export const parse_location_gcs_form_keys = (value: string): keyof LocationGcsFo
         case "lat":
 		case "lng":
 		case "geohash":
+		case "label":
             return value;
         default:
             return undefined;
@@ -98,6 +106,7 @@ export const parse_location_gcs_form_keys = (value: string): keyof LocationGcsFo
 export const parse_location_gcs_form_field_types = (value: string): "string" | "number" => {
     switch (value) {
         case "geohash":
+		case "label":
 			return "string";
 		case "lat":
 		case "lng":
@@ -112,7 +121,8 @@ export const location_gcs_sql = `CREATE TABLE IF NOT EXISTS location_gcs (
     created_at DATETIME NOT NULL CHECK(length(created_at) = 24),
     lat FLOAT NOT NULL,
 	lng FLOAT NOT NULL,
-	geohash CHAR(12) NOT NULL
+	geohash CHAR(12) NOT NULL UNIQUE,
+	label TEXT
 );`;
 
 export const models_initial_upgrade = [
