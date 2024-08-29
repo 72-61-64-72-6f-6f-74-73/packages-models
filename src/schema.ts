@@ -122,7 +122,8 @@ export const location_gcs_sql = `CREATE TABLE IF NOT EXISTS location_gcs (
     lat FLOAT NOT NULL,
 	lng FLOAT NOT NULL,
 	geohash CHAR(12) NOT NULL UNIQUE,
-	label TEXT
+	label TEXT,
+	CONSTRAINT unique_location_gcs UNIQUE (geohash)
 );`;
 
 export const models_initial_upgrade = [
