@@ -23,7 +23,7 @@ export const LocationGcsSchema = z.object({
     lat: z.number({ message: "model.location_gcs.schema.lat.required" }).min(-90, { message: "model.location_gcs.schema.lat.min" }).max(90, { message: "model.location_gcs.schema.lat.max" }),
 	lng: z.number({ message: "model.location_gcs.schema.lng.required" }).min(-180, { message: "model.location_gcs.schema.lng.min" }).max(180, { message: "model.location_gcs.schema.lng.max" }),
 	geohash: z.string({ message: "model.location_gcs.schema.geohash.required" }),
-	label: z.string().optional()
+	label: z.string({ message: "model.location_gcs.schema.label.required" })
 });
 
 export type LocationGcsFields = z.infer<typeof LocationGcsSchema>;
@@ -47,7 +47,7 @@ export const location_gcs_sort: Record<ILocationGcsSort, string> = {
 export function parse_location_gcs(obj: any): LocationGcs | undefined {
     if (typeof obj !== 'object' || obj === null) return undefined;
     const { id, created_at, lat, lng, geohash, label } = obj;
-    if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof lat !== "number") || (typeof lng !== "number") || (typeof geohash !== "string" || !geohash)) return undefined;
+    if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof lat !== "number") || (typeof lng !== "number") || (typeof geohash !== "string" || !geohash) || (typeof label !== "string" || !label)) return undefined;
     return { id, created_at, lat, lng, geohash, label, };
 };
 
@@ -78,9 +78,9 @@ export const location_gcs_form_fields: Record<keyof LocationGcsFormFields, IMode
         optional: false,
     },
 	label: {
-        validation: regex.alpha,
-        charset: regex.alpha,
-        optional: true,
+        validation: regex.alphanum,
+        charset: regex.alphanum,
+        optional: false,
     }
 };
 
