@@ -126,6 +126,112 @@ export const location_gcs_sql = `CREATE TABLE IF NOT EXISTS location_gcs (
 	CONSTRAINT unique_location_gcs UNIQUE (geohash)
 );`;
 
+export const TradeProductSchema = z.object({
+    key: z.string({ message: "model.trade_product.schema.key.required" }),
+	lot: z.string({ message: "model.trade_product.schema.lot.required" }).min(1, { message: "model.trade_product.schema.lot.min" }).max(120, { message: "model.trade_product.schema.lot.max" }),
+	varietal: z.string({ message: "model.trade_product.schema.varietal.required" }),
+	notes: z.string().optional()
+});
+
+export type TradeProductFields = z.infer<typeof TradeProductSchema>;
+export type TradeProductFormFields = ({
+    [K in keyof z.infer<typeof TradeProductSchema>]: string;
+});
+export type TradeProduct = ({ id: string; created_at: string; } & TradeProductFields);
+export type ITradeProductSort = (IModelsSortCreatedAt);
+export type ITradeProductQueryBindValuesKey = ("id" | "url");
+export type ITradeProductQueryBindValuesTuple = [ITradeProductQueryBindValuesKey, IModelsQueryBindValue];
+export type ITradeProductQueryBindValues = ({ id: IModelsQueryBindValue } | { url: IModelsQueryBindValue });
+export type ITradeProductGetList = { list: ["all"], sort?: ITradeProductSort };
+export type ITradeProductGet = (ITradeProductQueryBindValues | ITradeProductGetList);
+export type ITradeProductUpdate = { on: ITradeProductQueryBindValues, fields: TradeProductFormFields };
+
+export const trade_product_sort: Record<ITradeProductSort, string> = {
+    newest: "created_at DESC",
+    oldest: "created_at ASC",
+};
+
+export function parse_trade_product(obj: any): TradeProduct | undefined {
+    if (typeof obj !== 'object' || obj === null) return undefined;
+    const { id, created_at, key, lot, varietal, notes } = obj;
+    if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof key !== "string" || !key) || (typeof lot !== "string" || !lot) || (typeof varietal !== "string" || !varietal)) return undefined;
+    return { id, created_at, key, lot, varietal, notes, };
+};
+
+export const parse_trade_products = ({ values }: { values?: any[] }): TradeProduct[] | undefined => {
+    if (!Array.isArray(values) || !values.length) return undefined;
+    const list: TradeProduct[] = [];
+    for (const obj of values) {
+        const o = parse_trade_product(obj);
+        if (o) list.push(o);
+    };
+    return list.length ? list : undefined;
+};
+
+export const trade_product_form_fields: Record<keyof TradeProductFormFields, IModelsForm> = {
+    key: {
+        validation: regex.alpha,
+        charset: regex.alpha,
+        optional: false,
+    },
+	lot: {
+        validation: regex.alphanum,
+        charset: regex.alphanum,
+        optional: false,
+    },
+	varietal: {
+        validation: regex.alphanum,
+        charset: regex.alphanum,
+        optional: false,
+    },
+	notes: {
+        validation: regex.alpha,
+        charset: regex.alpha,
+        optional: true,
+    }
+};
+
+export const trade_product_form_vals: Record<keyof TradeProductFormFields, string> = {
+    key: "",
+	lot: "",
+	varietal: "",
+	notes: ""
+};
+
+export const parse_trade_product_form_keys = (value: string): keyof TradeProductFormFields | undefined => {
+    switch (value) {
+        case "key":
+		case "lot":
+		case "varietal":
+		case "notes":
+            return value;
+        default:
+            return undefined;
+    };
+};
+
+export const parse_trade_product_form_field_types = (value: string): "string" | "number" => {
+    switch (value) {
+        case "key":
+		case "lot":
+		case "varietal":
+		case "notes":
+			return "string";
+		default:
+            throw new Error("Error: parse_trade_product_transform did not match.");
+    };
+};
+
+export const trade_product_sql = `CREATE TABLE IF NOT EXISTS trade_product (
+	id CHAR(36) PRIMARY KEY NOT NULL UNIQUE CHECK(length(id) = 36),
+    created_at DATETIME NOT NULL CHECK(length(created_at) = 24),
+    key TEXT,
+	lot TEXT,
+	varietal TEXT,
+	notes TEXT,
+	CONSTRAINT unique_trade_product UNIQUE (key, lot, varietal)
+);`;
+
 export const NostrNoteSchema = z.object({
     ev_id: z.string({ message: "model.nostr_note.schema.ev_id.required" }),
 	ev_created_at: z.number({ message: "model.nostr_note.schema.ev_created_at.required" }),
@@ -236,5 +342,6 @@ export const nostr_note_sql = `CREATE TABLE IF NOT EXISTS nostr_note (
 export const models_initial_upgrade = [
 	`PRAGMA foreign_keys = ON;`,
 	location_gcs_sql,
+	trade_product_sql,
 	nostr_note_sql,
 ];
