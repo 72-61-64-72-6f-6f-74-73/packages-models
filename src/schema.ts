@@ -339,9 +339,18 @@ export const nostr_note_sql = `CREATE TABLE IF NOT EXISTS nostr_note (
 	CONSTRAINT unique_nostr_note UNIQUE (ev_id)
 );`;
 
+export const trade_product_location_sql = `CREATE TABLE IF NOT EXISTS trade_product_location (
+    tb_tploc_0 CHAR(36),
+	tb_tploc_1 CHAR(36),
+    FOREIGN KEY (tb_tploc_0) REFERENCES trade_product(id) ON DELETE CASCADE,
+	FOREIGN KEY (tb_tploc_1) REFERENCES location_gcs(id) ON DELETE CASCADE,
+    PRIMARY KEY (tb_tploc_0, tb_tploc_1)
+);`;
+
 export const models_initial_upgrade = [
 	`PRAGMA foreign_keys = ON;`,
 	location_gcs_sql,
 	trade_product_sql,
 	nostr_note_sql,
+	trade_product_location_sql
 ];
