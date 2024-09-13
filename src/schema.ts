@@ -3,19 +3,23 @@ import { regex } from "@radroots/utils";
 import type { IModelsForm, IModelsQueryBindValue, IModelsSortCreatedAt, IModelsFormErrorTuple, IModelsFormValidationTuple } from "./types";
 
 export const MassUnitSchema = z.union([
-    z.literal("g"),
+    z.literal("kg"),
     z.literal("lb"),
+    z.literal("g"),
 ]);
+
+export const mass_units: MassUnit[] = ["kg", "lb", "g"] as const;
 
 export type MassUnit = z.infer<typeof MassUnitSchema>;
 
 export function parse_mass_unit(val: string): MassUnit {
     switch (val) {
-        case "g":
+        case "kg":
         case "lb":
+        case "g":
             return val;
         default:
-            return "g";
+            return "kg";
     };
 };
 
@@ -128,8 +132,18 @@ export const location_gcs_sql = `CREATE TABLE IF NOT EXISTS location_gcs (
 
 export const TradeProductSchema = z.object({
     key: z.string({ message: "model.trade_product.schema.key.required" }),
-    lot: z.string({ message: "model.trade_product.schema.lot.required" }).min(1, { message: "model.trade_product.schema.lot.min" }).max(120, { message: "model.trade_product.schema.lot.max" }),
-    varietal: z.string({ message: "model.trade_product.schema.varietal.required" }),
+    process: z.string().optional(),
+    lot: z.string().min(1, { message: "model.trade_product.schema.lot.min" }).max(120, { message: "model.trade_product.schema.lot.max" }).optional(),
+    profile: z.string().optional(),
+    year: z.number({ message: "model.trade_product.schema.year.required" }).int().positive({ message: "model.trade_product.schema.year.positive" }),
+    qty_amt: z.number({ message: "model.trade_product.schema.qty_amt.required" }).int().positive({ message: "model.trade_product.schema.qty_amt.positive" }),
+    qty_unit: MassUnitSchema,
+    qty_label: z.string({ message: "model.trade_product.schema.qty_label.required" }),
+    qty_avail: z.number({ message: "model.trade_product.schema.qty_avail.required" }).int().positive({ message: "model.trade_product.schema.qty_avail.positive" }),
+    price_amt: z.number({ message: "model.trade_product.schema.price_amt.required" }).int().positive({ message: "model.trade_product.schema.price_amt.positive" }),
+    price_currency: z.string({ message: "model.trade_product.schema.price_currency.required" }).length(3, { message: "model.trade_product.schema.price_currency.length" }),
+    price_qty_amt: z.number({ message: "model.trade_product.schema.price_qty_amt.required" }).int().positive({ message: "model.trade_product.schema.price_qty_amt.positive" }),
+    price_qty_unit: MassUnitSchema,
     notes: z.string().optional()
 });
 
@@ -153,9 +167,9 @@ export const trade_product_sort: Record<ITradeProductSort, string> = {
 
 export function parse_trade_product(obj: any): TradeProduct | undefined {
     if (typeof obj !== 'object' || obj === null) return undefined;
-    const { id, created_at, key, lot, varietal, notes } = obj;
-    if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof key !== "string" || !key) || (typeof lot !== "string" || !lot) || (typeof varietal !== "string" || !varietal)) return undefined;
-    return { id, created_at, key, lot, varietal, notes, };
+    const { id, created_at, key, process, lot, profile, year, qty_amt, qty_unit, qty_label, qty_avail, price_amt, price_currency, price_qty_amt, price_qty_unit, notes } = obj;
+    if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof key !== "string" || !key) || (typeof year !== "number") || (typeof qty_amt !== "number") || (typeof qty_unit !== "string" || !qty_unit) || (typeof qty_label !== "string" || !qty_label) || (typeof qty_avail !== "number") || (typeof price_amt !== "number") || (typeof price_currency !== "string" || !price_currency) || (typeof price_qty_amt !== "number") || (typeof price_qty_unit !== "string" || !price_qty_unit)) return undefined;
+    return { id, created_at, key, process, lot, profile, year, qty_amt, qty_unit: parse_mass_unit(qty_unit), qty_label, qty_avail, price_amt, price_currency, price_qty_amt, price_qty_unit: parse_mass_unit(price_qty_unit), notes, };
 };
 
 export const parse_trade_products = ({ values }: { values?: any[] }): TradeProduct[] | undefined => {
@@ -174,15 +188,71 @@ export const trade_product_form_fields: Record<keyof TradeProductFormFields, IMo
         charset: regex.alpha,
         optional: false,
     },
+    process: {
+        validation: regex.alphanum,
+        charset: regex.alphanum,
+        optional: true,
+    },
     lot: {
         validation: regex.alphanum,
         charset: regex.alphanum,
+        optional: true,
+    },
+    profile: {
+        validation: regex.alpha,
+        charset: regex.alpha,
+        optional: true,
+    },
+    year: {
+        validation: regex.num,
+        charset: regex.num,
         optional: false,
     },
-    varietal: {
-        validation: regex.alphanum,
-        charset: regex.alphanum,
+    qty_amt: {
+        validation: regex.num,
+        charset: regex.num,
         optional: false,
+        default: 1,
+    },
+    qty_unit: {
+        validation: regex.alpha,
+        charset: regex.alpha,
+        optional: false,
+        default: "kg",
+    },
+    qty_label: {
+        validation: regex.alpha,
+        charset: regex.alpha,
+        optional: false,
+    },
+    qty_avail: {
+        validation: regex.num,
+        charset: regex.num,
+        optional: false,
+    },
+    price_amt: {
+        validation: regex.price,
+        charset: regex.price_charset,
+        optional: false,
+        default: 1,
+    },
+    price_currency: {
+        validation: regex.alpha,
+        charset: regex.alpha,
+        optional: false,
+        default: "usd",
+    },
+    price_qty_amt: {
+        validation: regex.num,
+        charset: regex.num,
+        optional: false,
+        default: 1,
+    },
+    price_qty_unit: {
+        validation: regex.alpha,
+        charset: regex.alpha,
+        optional: false,
+        default: "kg",
     },
     notes: {
         validation: regex.alpha,
@@ -193,16 +263,36 @@ export const trade_product_form_fields: Record<keyof TradeProductFormFields, IMo
 
 export const trade_product_form_vals: Record<keyof TradeProductFormFields, string> = {
     key: "",
+    process: "",
     lot: "",
-    varietal: "",
+    profile: "",
+    year: "",
+    qty_amt: "",
+    qty_unit: "",
+    qty_label: "",
+    qty_avail: "",
+    price_amt: "",
+    price_currency: "",
+    price_qty_amt: "",
+    price_qty_unit: "",
     notes: ""
 };
 
 export const parse_trade_product_form_keys = (value: string): keyof TradeProductFormFields | undefined => {
     switch (value) {
         case "key":
+        case "process":
         case "lot":
-        case "varietal":
+        case "profile":
+        case "year":
+        case "qty_amt":
+        case "qty_unit":
+        case "qty_label":
+        case "qty_avail":
+        case "price_amt":
+        case "price_currency":
+        case "price_qty_amt":
+        case "price_qty_unit":
         case "notes":
             return value;
         default:
@@ -213,10 +303,21 @@ export const parse_trade_product_form_keys = (value: string): keyof TradeProduct
 export const parse_trade_product_form_field_types = (value: string): "string" | "number" => {
     switch (value) {
         case "key":
+        case "process":
         case "lot":
-        case "varietal":
+        case "profile":
+        case "qty_unit":
+        case "qty_label":
+        case "price_currency":
+        case "price_qty_unit":
         case "notes":
             return "string";
+        case "year":
+        case "qty_amt":
+        case "qty_avail":
+        case "price_amt":
+        case "price_qty_amt":
+            return "number";
         default:
             throw new Error("Error: parse_trade_product_transform did not match.");
     };
@@ -226,278 +327,19 @@ export const trade_product_sql = `CREATE TABLE IF NOT EXISTS trade_product (
     id CHAR(36) PRIMARY KEY NOT NULL UNIQUE CHECK(length(id) = 36),
     created_at DATETIME NOT NULL CHECK(length(created_at) = 24),
     key TEXT,
+    process TEXT,
     lot TEXT,
-    varietal TEXT,
-    notes TEXT,
-    CONSTRAINT unique_trade_product UNIQUE (key, lot, varietal)
-);`;
-
-export const TradeOfferSchema = z.object({
-    quantity_amt: z.number({ message: "model.trade_offer.schema.quantity_amt.required" }).int().positive({ message: "model.trade_offer.schema.quantity_amt.positive" }),
-    quantity_unit: MassUnitSchema,
-    quantity_lo: z.number().int().positive({ message: "model.trade_offer.schema.quantity_lo.positive" }).optional(),
-    quantity_hi: z.number().int().positive({ message: "model.trade_offer.schema.quantity_hi.positive" }).optional(),
-    price_amt: z.number({ message: "model.trade_offer.schema.price_amt.required" }).int().positive({ message: "model.trade_offer.schema.price_amt.positive" }),
-    price_currency: z.string({ message: "model.trade_offer.schema.price_currency.required" }).length(3, { message: "model.trade_offer.schema.price_currency.length" }),
-    price_terms: z.string().optional(),
-    label: z.string().optional(),
-    notes: z.string().optional()
-});
-
-export type TradeOfferFields = z.infer<typeof TradeOfferSchema>;
-export type TradeOfferFormFields = ({
-    [K in keyof z.infer<typeof TradeOfferSchema>]: string;
-});
-export type TradeOffer = ({ id: string; created_at: string; } & TradeOfferFields);
-export type ITradeOfferSort = (IModelsSortCreatedAt);
-export type ITradeOfferQueryBindValuesKey = ("id");
-export type ITradeOfferQueryBindValuesTuple = [ITradeOfferQueryBindValuesKey, IModelsQueryBindValue];
-export type ITradeOfferQueryBindValues = ({ id: IModelsQueryBindValue });
-export type ITradeOfferGetList = { list: ["all"] | ["unique", { quantity_amt: string;  quantity_unit: string;  price_amt: string;  price_currency: string;  }], sort?: ITradeOfferSort };
-export type ITradeOfferGet = (ITradeOfferQueryBindValues | ITradeOfferGetList);
-export type ITradeOfferUpdate = { on: ITradeOfferQueryBindValues, fields: TradeOfferFormFields };
-
-export const trade_offer_sort: Record<ITradeOfferSort, string> = {
-    newest: "created_at DESC",
-    oldest: "created_at ASC",
-};
-
-export function parse_trade_offer(obj: any): TradeOffer | undefined {
-    if (typeof obj !== 'object' || obj === null) return undefined;
-    const { id, created_at, quantity_amt, quantity_unit, quantity_lo, quantity_hi, price_amt, price_currency, price_terms, label, notes } = obj;
-    if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof quantity_amt !== "number") || (typeof quantity_unit !== "string" || !quantity_unit) || (typeof price_amt !== "number") || (typeof price_currency !== "string" || !price_currency)) return undefined;
-    return { id, created_at, quantity_amt, quantity_unit: parse_mass_unit(quantity_unit), quantity_lo, quantity_hi, price_amt, price_currency, price_terms, label, notes, };
-};
-
-export const parse_trade_offers = ({ values }: { values?: any[] }): TradeOffer[] | undefined => {
-    if (!Array.isArray(values) || !values.length) return undefined;
-    const list: TradeOffer[] = [];
-    for (const obj of values) {
-        const o = parse_trade_offer(obj);
-        if (o) list.push(o);
-    };
-    return list.length ? list : undefined;
-};
-
-export const trade_offer_form_fields: Record<keyof TradeOfferFormFields, IModelsForm> = {
-    quantity_amt: {
-        validation: regex.num,
-        charset: regex.num,
-        optional: false,
-        default: 1,
-    },
-    quantity_unit: {
-        validation: regex.alpha,
-        charset: regex.alpha,
-        optional: false,
-        default: "lb",
-    },
-    quantity_lo: {
-        validation: regex.alpha,
-        charset: regex.alpha,
-        optional: true,
-    },
-    quantity_hi: {
-        validation: regex.alpha,
-        charset: regex.alpha,
-        optional: true,
-    },
-    price_amt: {
-        validation: regex.num,
-        charset: regex.num,
-        optional: false,
-        default: 1,
-    },
-    price_currency: {
-        validation: regex.alpha,
-        charset: regex.alpha,
-        optional: false,
-        default: "usd",
-    },
-    price_terms: {
-        validation: regex.alpha,
-        charset: regex.alpha,
-        optional: true,
-    },
-    label: {
-        validation: regex.alpha,
-        charset: regex.alpha,
-        optional: true,
-    },
-    notes: {
-        validation: regex.alpha,
-        charset: regex.alpha,
-        optional: true,
-    }
-};
-
-export const trade_offer_form_vals: Record<keyof TradeOfferFormFields, string> = {
-    quantity_amt: "",
-    quantity_unit: "",
-    quantity_lo: "",
-    quantity_hi: "",
-    price_amt: "",
-    price_currency: "",
-    price_terms: "",
-    label: "",
-    notes: ""
-};
-
-export const parse_trade_offer_form_keys = (value: string): keyof TradeOfferFormFields | undefined => {
-    switch (value) {
-        case "quantity_amt":
-        case "quantity_unit":
-        case "quantity_lo":
-        case "quantity_hi":
-        case "price_amt":
-        case "price_currency":
-        case "price_terms":
-        case "label":
-        case "notes":
-            return value;
-        default:
-            return undefined;
-    };
-};
-
-export const parse_trade_offer_form_field_types = (value: string): "string" | "number" => {
-    switch (value) {
-        case "quantity_unit":
-        case "price_currency":
-        case "price_terms":
-        case "label":
-        case "notes":
-            return "string";
-        case "quantity_amt":
-        case "quantity_lo":
-        case "quantity_hi":
-        case "price_amt":
-            return "number";
-        default:
-            throw new Error("Error: parse_trade_offer_transform did not match.");
-    };
-};
-
-export const trade_offer_sql = `CREATE TABLE IF NOT EXISTS trade_offer (
-    id CHAR(36) PRIMARY KEY NOT NULL UNIQUE CHECK(length(id) = 36),
-    created_at DATETIME NOT NULL CHECK(length(created_at) = 24),
-    quantity_amt REAL,
-    quantity_unit CHAR(2) NOT NULL,
-    quantity_lo INTEGER,
-    quantity_hi INTEGER,
+    profile TEXT,
+    year CHAR(4) NOT NULL,
+    qty_amt REAL,
+    qty_unit CHAR(4) NOT NULL,
+    qty_label TEXT,
+    qty_avail INTEGER,
     price_amt INTEGER NOT NULL,
     price_currency CHAR(3) NOT NULL,
-    price_terms TEXT,
-    label TEXT,
-    notes TEXT,
-    CONSTRAINT unique_trade_offer UNIQUE (quantity_amt, quantity_unit, price_amt, price_currency)
-);`;
-
-export const NostrNoteSchema = z.object({
-    ev_id: z.string({ message: "model.nostr_note.schema.ev_id.required" }),
-    ev_created_at: z.number({ message: "model.nostr_note.schema.ev_created_at.required" }),
-    ev_content: z.string({ message: "model.nostr_note.schema.ev_content.required" }),
-    ev_tags: z.string({ message: "model.nostr_note.schema.ev_tags.required" })
-});
-
-export type NostrNoteFields = z.infer<typeof NostrNoteSchema>;
-export type NostrNoteFormFields = ({
-    [K in keyof z.infer<typeof NostrNoteSchema>]: string;
-});
-export type NostrNote = ({ id: string; created_at: string; } & NostrNoteFields);
-export type INostrNoteSort = (IModelsSortCreatedAt);
-export type INostrNoteQueryBindValuesKey = ("id");
-export type INostrNoteQueryBindValuesTuple = [INostrNoteQueryBindValuesKey, IModelsQueryBindValue];
-export type INostrNoteQueryBindValues = ({ id: IModelsQueryBindValue });
-export type INostrNoteGetList = { list: ["all"], sort?: INostrNoteSort };
-export type INostrNoteGet = (INostrNoteQueryBindValues | INostrNoteGetList);
-export type INostrNoteUpdate = { on: INostrNoteQueryBindValues, fields: NostrNoteFormFields };
-
-export const nostr_note_sort: Record<INostrNoteSort, string> = {
-    newest: "created_at DESC",
-    oldest: "created_at ASC",
-};
-
-export function parse_nostr_note(obj: any): NostrNote | undefined {
-    if (typeof obj !== 'object' || obj === null) return undefined;
-    const { id, created_at, ev_id, ev_created_at, ev_content, ev_tags } = obj;
-    if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof ev_id !== "string" || !ev_id) || (typeof ev_created_at !== "number") || (typeof ev_content !== "string" || !ev_content) || (typeof ev_tags !== "string" || !ev_tags)) return undefined;
-    return { id, created_at, ev_id, ev_created_at, ev_content, ev_tags, };
-};
-
-export const parse_nostr_notes = ({ values }: { values?: any[] }): NostrNote[] | undefined => {
-    if (!Array.isArray(values) || !values.length) return undefined;
-    const list: NostrNote[] = [];
-    for (const obj of values) {
-        const o = parse_nostr_note(obj);
-        if (o) list.push(o);
-    };
-    return list.length ? list : undefined;
-};
-
-export const nostr_note_form_fields: Record<keyof NostrNoteFormFields, IModelsForm> = {
-    ev_id: {
-        validation: regex.alpha,
-        charset: regex.alpha,
-        optional: false,
-    },
-    ev_created_at: {
-        validation: regex.alpha,
-        charset: regex.alpha,
-        optional: false,
-    },
-    ev_content: {
-        validation: regex.alpha,
-        charset: regex.alpha,
-        optional: false,
-    },
-    ev_tags: {
-        validation: regex.alpha,
-        charset: regex.alpha,
-        optional: false,
-    }
-};
-
-export const nostr_note_form_vals: Record<keyof NostrNoteFormFields, string> = {
-    ev_id: "",
-    ev_created_at: "",
-    ev_content: "",
-    ev_tags: ""
-};
-
-export const parse_nostr_note_form_keys = (value: string): keyof NostrNoteFormFields | undefined => {
-    switch (value) {
-        case "ev_id":
-        case "ev_created_at":
-        case "ev_content":
-        case "ev_tags":
-            return value;
-        default:
-            return undefined;
-    };
-};
-
-export const parse_nostr_note_form_field_types = (value: string): "string" | "number" => {
-    switch (value) {
-        case "ev_id":
-        case "ev_content":
-        case "ev_tags":
-            return "string";
-        case "ev_created_at":
-            return "number";
-        default:
-            throw new Error("Error: parse_nostr_note_transform did not match.");
-    };
-};
-
-export const nostr_note_sql = `CREATE TABLE IF NOT EXISTS nostr_note (
-    id CHAR(36) PRIMARY KEY NOT NULL UNIQUE CHECK(length(id) = 36),
-    created_at DATETIME NOT NULL CHECK(length(created_at) = 24),
-    ev_id TEXT,
-    ev_created_at REAL,
-    ev_content TEXT,
-    ev_tags TEXT,
-    CONSTRAINT unique_nostr_note UNIQUE (ev_id)
+    price_qty_amt REAL,
+    price_qty_unit CHAR(4) NOT NULL,
+    notes TEXT
 );`;
 
 export const trade_product_location_sql = `CREATE TABLE IF NOT EXISTS trade_product_location (
@@ -512,7 +354,5 @@ export const models_initial_upgrade = [
     `PRAGMA foreign_keys = ON;`,
     location_gcs_sql,
     trade_product_sql,
-    trade_offer_sql,
-    nostr_note_sql,
     trade_product_location_sql
 ];
