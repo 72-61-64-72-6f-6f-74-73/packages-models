@@ -1,6 +1,6 @@
-import { z } from "zod";
 import { regex } from "@radroots/utils";
-import type { IModelsForm, IModelsQueryBindValue, IModelsSortCreatedAt } from "../types";
+import { z } from "zod";
+import type { IModelsForm, IModelsQueryBindValue, IModelsQueryValue, IModelsSortCreatedAt } from "../types";
 import { MassUnitSchema, parse_mass_unit } from "../utils";
 
 export const TradeProductSchema = z.object({
@@ -44,7 +44,7 @@ export function parse_trade_product(obj: any): TradeProduct | undefined {
 	return { id, created_at, key, process, lot, profile, year, qty_amt, qty_unit: parse_mass_unit(qty_unit), qty_label, qty_avail, price_amt, price_currency, price_qty_amt, price_qty_unit: parse_mass_unit(price_qty_unit), notes };
 };
 
-export const parse_trade_products = ({ values }: { values?: any[] }): TradeProduct[] | undefined => {
+export const parse_trade_product_list = ({ values }: { values?: any[] }): TradeProduct[] | undefined => {
 	if (!Array.isArray(values) || !values.length) return undefined;
 	const list: TradeProduct[] = [];
 	for (const obj of values) {
@@ -172,8 +172,8 @@ export const parse_trade_product_form_keys = (value: string): keyof TradeProduct
 	};
 };
 
-export const parse_trade_product_form_field_types = (value: string): "string" | "number" => {
-	switch (value) {
+export const parse_trade_product_form_fields = ([k, v]: [string, string]): [string, IModelsQueryValue] => {
+	switch (v) {
 		case "key":
 		case "process":
 		case "lot":
@@ -183,15 +183,15 @@ export const parse_trade_product_form_field_types = (value: string): "string" | 
 		case "price_currency":
 		case "price_qty_unit":
 		case "notes":
-			return "string";
+			return [k, String(v)];
 		case "year":
 		case "qty_amt":
 		case "qty_avail":
 		case "price_amt":
 		case "price_qty_amt":
-			return "number";
+			return [k, Number(v)];
 		default:
-			throw new Error("Error: parse_trade_product_form_field_types did not match.");
+			throw new Error("Error: parse_trade_product_form_fields did not match.");
 	};
 };
 

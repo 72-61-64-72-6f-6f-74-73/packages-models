@@ -1,6 +1,6 @@
-import { z } from "zod";
 import { regex } from "@radroots/utils";
-import type { IModelsForm, IModelsQueryBindValue, IModelsSortCreatedAt } from "../types";
+import { z } from "zod";
+import type { IModelsForm, IModelsQueryBindValue, IModelsQueryValue, IModelsSortCreatedAt } from "../types";
 
 export const LocationGcsSchema = z.object({
 	lat: z.number({ message: "model.location_gcs.schema.lat.required" }).min(-90, { message: "model.location_gcs.schema.lat.min" }).max(90, { message: "model.location_gcs.schema.lat.max" }),
@@ -33,7 +33,7 @@ export function parse_location_gcs(obj: any): LocationGcs | undefined {
 	return { id, created_at, lat, lng, geohash, label };
 };
 
-export const parse_location_gcss = ({ values }: { values?: any[] }): LocationGcs[] | undefined => {
+export const parse_location_gcs_list = ({ values }: { values?: any[] }): LocationGcs[] | undefined => {
 	if (!Array.isArray(values) || !values.length) return undefined;
 	const list: LocationGcs[] = [];
 	for (const obj of values) {
@@ -85,16 +85,16 @@ export const parse_location_gcs_form_keys = (value: string): keyof LocationGcsFo
 	};
 };
 
-export const parse_location_gcs_form_field_types = (value: string): "string" | "number" => {
-	switch (value) {
+export const parse_location_gcs_form_fields = ([k, v]: [string, string]): [string, IModelsQueryValue] => {
+	switch (v) {
 		case "geohash":
 		case "label":
-			return "string";
+			return [k, String(v)];
 		case "lat":
 		case "lng":
-			return "number";
+			return [k, Number(v)];
 		default:
-			throw new Error("Error: parse_location_gcs_form_field_types did not match.");
+			throw new Error("Error: parse_location_gcs_form_fields did not match.");
 	};
 };
 

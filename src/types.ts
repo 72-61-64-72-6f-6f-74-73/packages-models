@@ -1,3 +1,4 @@
+export type IModelsQueryValue = string | number | boolean;
 export type IModelsQueryBindValue = string | number | boolean | null;
 export type IModelsQueryBindValueTuple = [string, IModelsQueryBindValue];
 export type IModelsQueryBindValueOpt = (IModelsQueryBindValue[] | null)
