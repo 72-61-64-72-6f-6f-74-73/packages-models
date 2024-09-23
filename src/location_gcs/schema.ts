@@ -86,7 +86,7 @@ export const parse_location_gcs_form_keys = (value: string): keyof LocationGcsFo
 };
 
 export const parse_location_gcs_form_fields = ([k, v]: [string, string]): [string, IModelsQueryValue] => {
-	switch (v) {
+	switch (k) {
 		case "geohash":
 		case "label":
 			return [k, String(v)];

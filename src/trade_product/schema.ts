@@ -173,7 +173,7 @@ export const parse_trade_product_form_keys = (value: string): keyof TradeProduct
 };
 
 export const parse_trade_product_form_fields = ([k, v]: [string, string]): [string, IModelsQueryValue] => {
-	switch (v) {
+	switch (k) {
 		case "key":
 		case "process":
 		case "lot":
