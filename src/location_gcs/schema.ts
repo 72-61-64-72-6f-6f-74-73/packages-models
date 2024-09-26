@@ -9,9 +9,15 @@ export const LocationGcsSchema = z.object({
 	label: z.string({ message: "model.location_gcs.schema.label.required" }),
 });
 
+export const LocationGcsUpdateSchema = z.object({
+	lat: z.number({ message: "model.location_gcs.schema.lat.required" }).min(-90, { message: "model.location_gcs.schema.lat.min" }).max(90, { message: "model.location_gcs.schema.lat.max" }).optional(),
+	lng: z.number({ message: "model.location_gcs.schema.lng.required" }).min(-180, { message: "model.location_gcs.schema.lng.min" }).max(180, { message: "model.location_gcs.schema.lng.max" }).optional(),
+	geohash: z.string({ message: "model.location_gcs.schema.geohash.required" }).optional(),
+	label: z.string({ message: "model.location_gcs.schema.label.required" }).optional(),
+});
+
 export type LocationGcsFields = z.infer<typeof LocationGcsSchema>;
 export type LocationGcsFormFields = { [K in keyof LocationGcsFields]: string; };
-export type LocationGcsFormFieldsPartial = Partial<LocationGcsFormFields>;
 export type LocationGcs = { id: string; created_at: string; } & LocationGcsFields;
 
 export type ILocationGcsSort = IModelsSortCreatedAt;
@@ -20,7 +26,7 @@ export type ILocationGcsQueryBindValuesTuple = [ILocationGcsQueryBindValuesKey, 
 export type ILocationGcsQueryBindValues = { id: IModelsQueryBindValue } | { geohash: IModelsQueryBindValue };
 export type ILocationGcsGetList = { list: ["all"], sort?: ILocationGcsSort };
 export type ILocationGcsGet = ILocationGcsQueryBindValues | ILocationGcsGetList;
-export type ILocationGcsUpdate = { on: ILocationGcsQueryBindValues, fields: LocationGcsFormFieldsPartial };
+export type ILocationGcsUpdate = { on: ILocationGcsQueryBindValues, fields: Partial<LocationGcsFormFields>; };
 
 export const location_gcs_sort: Record<ILocationGcsSort, string> = {
 	newest: "created_at DESC",

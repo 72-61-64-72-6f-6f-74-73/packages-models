@@ -6,6 +6,10 @@ export const NostrProfileSchema = z.object({
 	public_key: z.string({ message: "model.nostr_profile.schema.public_key.required" }).length(64, { message: "model.nostr_profile.schema.public_key.length" }),
 });
 
+export const NostrProfileUpdateSchema = z.object({
+	public_key: z.string({ message: "model.nostr_profile.schema.public_key.required" }).length(64, { message: "model.nostr_profile.schema.public_key.length" }).optional(),
+});
+
 export const NostrProfileMetadataSchema = z.object({
     name: z.string().optional(),
 	display_name: z.string().optional(),
@@ -21,7 +25,6 @@ export const NostrProfileMetadataSchema = z.object({
 export type NostrProfileMetadata = z.infer<typeof NostrProfileMetadataSchema>;
 export type NostrProfileFields = z.infer<typeof NostrProfileSchema> & NostrProfileMetadata;
 export type NostrProfileFormFields = { [K in keyof NostrProfileFields]: string; };
-export type NostrProfileFormFieldsPartial = Partial<NostrProfileFormFields>;
 export type NostrProfile = { id: string; created_at: string; } & NostrProfileFields;
 
 export type INostrProfileSort = IModelsSortCreatedAt;
@@ -30,7 +33,7 @@ export type INostrProfileQueryBindValuesTuple = [INostrProfileQueryBindValuesKey
 export type INostrProfileQueryBindValues = { public_key: IModelsQueryBindValue } | { nip05: IModelsQueryBindValue };
 export type INostrProfileGetList = { list: ["all"], sort?: INostrProfileSort };
 export type INostrProfileGet = INostrProfileQueryBindValues | INostrProfileGetList;
-export type INostrProfileUpdate = { on: INostrProfileQueryBindValues, fields: NostrProfileFormFieldsPartial };
+export type INostrProfileUpdate = { on: INostrProfileQueryBindValues, fields: Partial<NostrProfileFormFields>; };
 
 export const nostr_profile_sort: Record<INostrProfileSort, string> = {
 	newest: "created_at DESC",
