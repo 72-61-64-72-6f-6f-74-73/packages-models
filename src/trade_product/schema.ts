@@ -21,8 +21,8 @@ export const TradeProductSchema = z.object({
 });
 
 export type TradeProductFields = z.infer<typeof TradeProductSchema>;
-export type TradeProductFormFields = { [K in keyof z.infer<typeof TradeProductSchema>]: string; };
-export type TradeProduct = { id: string; created_at: string; key: string; process: string; lot: string; profile: string; year: number; qty_amt: number; qty_unit: string; qty_label: string; qty_avail: number; price_amt: number; price_currency: string; price_qty_amt: number; price_qty_unit: string; notes: string; } & TradeProductFields;
+export type TradeProductFormFields = { [K in keyof TradeProductFields]: string; };
+export type TradeProduct = { id: string; created_at: string; } & TradeProductFields;
 
 export type ITradeProductSort = IModelsSortCreatedAt;
 export type ITradeProductQueryBindValuesKey = "id" | "url";
@@ -37,11 +37,28 @@ export const trade_product_sort: Record<ITradeProductSort, string> = {
 	oldest: "created_at ASC",
 };
 
-export function parse_trade_product(obj: any): TradeProduct | undefined {
+export function parse_trade_product(obj: any): TradeProduct | "" {
 	if (typeof obj !== 'object' || !obj) return undefined;
 	const { id, created_at, key, process, lot, profile, year, qty_amt, qty_unit, qty_label, qty_avail, price_amt, price_currency, price_qty_amt, price_qty_unit, notes } = obj;
-	if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof key !== "string" || !key) || (typeof year !== "number") || (typeof qty_amt !== "number") || (typeof qty_unit !== "string" || !qty_unit) || (typeof qty_label !== "string" || !qty_label) || (typeof qty_avail !== "number") || (typeof price_amt !== "number") || (typeof price_currency !== "string" || !price_currency) || (typeof price_qty_amt !== "number") || (typeof price_qty_unit !== "string" || !price_qty_unit)) return undefined;
-	return { id, created_at, key, process, lot, profile, year, qty_amt, qty_unit: parse_mass_unit(qty_unit), qty_label, qty_avail, price_amt, price_currency, price_qty_amt, price_qty_unit: parse_mass_unit(price_qty_unit), notes };
+	if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof key !== "string" || !key) || (typeof year !== "number") || (typeof qty_amt !== "number") || (typeof qty_unit !== "string" || !qty_unit) || (typeof qty_label !== "string" || !qty_label) || (typeof qty_avail !== "number") || (typeof price_amt !== "number") || (typeof price_currency !== "string" || !price_currency) || (typeof price_qty_amt !== "number") || (typeof price_qty_unit !== "string" || !price_qty_unit)) return "";
+	return {
+		id,
+		created_at,
+		key,
+		process: typeof obj.process === "string" ? obj.process : undefined,
+		lot: typeof obj.lot === "string" ? obj.lot : undefined,
+		profile: typeof obj.profile === "string" ? obj.profile : undefined,
+		year,
+		qty_amt,
+		qty_unit: parse_mass_unit(qty_unit),
+		qty_label,
+		qty_avail,
+		price_amt,
+		price_currency,
+		price_qty_amt,
+		price_qty_unit: parse_mass_unit(price_qty_unit),
+		notes: typeof obj.notes === "string" ? obj.notes : undefined
+	};
 };
 
 export const parse_trade_product_list = ({ values }: { values?: any[] }): TradeProduct[] | undefined => {
@@ -150,7 +167,7 @@ export const trade_product_form_vals: Record<keyof TradeProductFormFields, strin
 	notes: "",
 };
 
-export const parse_trade_product_form_keys = (value: string): keyof TradeProductFormFields | undefined => {
+export const parse_trade_product_form_keys = (value: string): keyof TradeProductFormFields | "" => {
 	switch (value) {
 		case "key":
 		case "process":
@@ -168,7 +185,7 @@ export const parse_trade_product_form_keys = (value: string): keyof TradeProduct
 		case "notes":
 			return value;
 		default:
-			return undefined;
+			return "";
 	};
 };
 

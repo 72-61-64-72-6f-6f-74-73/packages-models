@@ -10,8 +10,8 @@ export const LocationGcsSchema = z.object({
 });
 
 export type LocationGcsFields = z.infer<typeof LocationGcsSchema>;
-export type LocationGcsFormFields = { [K in keyof z.infer<typeof LocationGcsSchema>]: string; };
-export type LocationGcs = { id: string; created_at: string; lat: number; lng: number; geohash: string; label: string; } & LocationGcsFields;
+export type LocationGcsFormFields = { [K in keyof LocationGcsFields]: string; };
+export type LocationGcs = { id: string; created_at: string; } & LocationGcsFields;
 
 export type ILocationGcsSort = IModelsSortCreatedAt;
 export type ILocationGcsQueryBindValuesKey = "id" | "geohash";
@@ -26,11 +26,18 @@ export const location_gcs_sort: Record<ILocationGcsSort, string> = {
 	oldest: "created_at ASC",
 };
 
-export function parse_location_gcs(obj: any): LocationGcs | undefined {
+export function parse_location_gcs(obj: any): LocationGcs | "" {
 	if (typeof obj !== 'object' || !obj) return undefined;
 	const { id, created_at, lat, lng, geohash, label } = obj;
-	if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof lat !== "number") || (typeof lng !== "number") || (typeof geohash !== "string" || !geohash) || (typeof label !== "string" || !label)) return undefined;
-	return { id, created_at, lat, lng, geohash, label };
+	if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof lat !== "number") || (typeof lng !== "number") || (typeof geohash !== "string" || !geohash) || (typeof label !== "string" || !label)) return "";
+	return {
+		id,
+		created_at,
+		lat,
+		lng,
+		geohash,
+		label
+	};
 };
 
 export const parse_location_gcs_list = ({ values }: { values?: any[] }): LocationGcs[] | undefined => {
@@ -73,7 +80,7 @@ export const location_gcs_form_vals: Record<keyof LocationGcsFormFields, string>
 	label: "",
 };
 
-export const parse_location_gcs_form_keys = (value: string): keyof LocationGcsFormFields | undefined => {
+export const parse_location_gcs_form_keys = (value: string): keyof LocationGcsFormFields | "" => {
 	switch (value) {
 		case "lat":
 		case "lng":
@@ -81,7 +88,7 @@ export const parse_location_gcs_form_keys = (value: string): keyof LocationGcsFo
 		case "label":
 			return value;
 		default:
-			return undefined;
+			return "";
 	};
 };
 
