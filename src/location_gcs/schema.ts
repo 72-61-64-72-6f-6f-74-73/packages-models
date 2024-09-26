@@ -11,6 +11,7 @@ export const LocationGcsSchema = z.object({
 
 export type LocationGcsFields = z.infer<typeof LocationGcsSchema>;
 export type LocationGcsFormFields = { [K in keyof LocationGcsFields]: string; };
+export type LocationGcsFormFieldsPartial = Partial<LocationGcsFormFields>;
 export type LocationGcs = { id: string; created_at: string; } & LocationGcsFields;
 
 export type ILocationGcsSort = IModelsSortCreatedAt;
@@ -19,7 +20,7 @@ export type ILocationGcsQueryBindValuesTuple = [ILocationGcsQueryBindValuesKey, 
 export type ILocationGcsQueryBindValues = { id: IModelsQueryBindValue } | { geohash: IModelsQueryBindValue };
 export type ILocationGcsGetList = { list: ["all"], sort?: ILocationGcsSort };
 export type ILocationGcsGet = ILocationGcsQueryBindValues | ILocationGcsGetList;
-export type ILocationGcsUpdate = { on: ILocationGcsQueryBindValues, fields: LocationGcsFormFields };
+export type ILocationGcsUpdate = { on: ILocationGcsQueryBindValues, fields: LocationGcsFormFieldsPartial };
 
 export const location_gcs_sort: Record<ILocationGcsSort, string> = {
 	newest: "created_at DESC",

@@ -21,6 +21,7 @@ export const NostrProfileMetadataSchema = z.object({
 export type NostrProfileMetadata = z.infer<typeof NostrProfileMetadataSchema>;
 export type NostrProfileFields = z.infer<typeof NostrProfileSchema> & NostrProfileMetadata;
 export type NostrProfileFormFields = { [K in keyof NostrProfileFields]: string; };
+export type NostrProfileFormFieldsPartial = Partial<NostrProfileFormFields>;
 export type NostrProfile = { id: string; created_at: string; } & NostrProfileFields;
 
 export type INostrProfileSort = IModelsSortCreatedAt;
@@ -29,7 +30,7 @@ export type INostrProfileQueryBindValuesTuple = [INostrProfileQueryBindValuesKey
 export type INostrProfileQueryBindValues = { public_key: IModelsQueryBindValue } | { nip05: IModelsQueryBindValue };
 export type INostrProfileGetList = { list: ["all"], sort?: INostrProfileSort };
 export type INostrProfileGet = INostrProfileQueryBindValues | INostrProfileGetList;
-export type INostrProfileUpdate = { on: INostrProfileQueryBindValues, fields: NostrProfileFormFields };
+export type INostrProfileUpdate = { on: INostrProfileQueryBindValues, fields: NostrProfileFormFieldsPartial };
 
 export const nostr_profile_sort: Record<INostrProfileSort, string> = {
 	newest: "created_at DESC",
@@ -73,8 +74,8 @@ export const nostr_profile_form_fields: Record<keyof NostrProfileFormFields, IMo
 		optional: false,
 	},
 	name: {
-		validation: regex.alphanum,
-		charset: regex.alphanum,
+		validation: regex.profile_name,
+		charset: regex.profile_name_char,
 		optional: true,
 	},
 	display_name: {

@@ -22,6 +22,7 @@ export const TradeProductSchema = z.object({
 
 export type TradeProductFields = z.infer<typeof TradeProductSchema>;
 export type TradeProductFormFields = { [K in keyof TradeProductFields]: string; };
+export type TradeProductFormFieldsPartial = Partial<TradeProductFormFields>;
 export type TradeProduct = { id: string; created_at: string; } & TradeProductFields;
 
 export type ITradeProductSort = IModelsSortCreatedAt;
@@ -30,7 +31,7 @@ export type ITradeProductQueryBindValuesTuple = [ITradeProductQueryBindValuesKey
 export type ITradeProductQueryBindValues = { id: IModelsQueryBindValue } | { url: IModelsQueryBindValue };
 export type ITradeProductGetList = { list: ["all"], sort?: ITradeProductSort };
 export type ITradeProductGet = ITradeProductQueryBindValues | ITradeProductGetList;
-export type ITradeProductUpdate = { on: ITradeProductQueryBindValues, fields: TradeProductFormFields };
+export type ITradeProductUpdate = { on: ITradeProductQueryBindValues, fields: TradeProductFormFieldsPartial };
 
 export const trade_product_sort: Record<ITradeProductSort, string> = {
 	newest: "created_at DESC",
