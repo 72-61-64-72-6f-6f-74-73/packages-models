@@ -37,10 +37,10 @@ export const trade_product_sort: Record<ITradeProductSort, string> = {
 	oldest: "created_at ASC",
 };
 
-export function parse_trade_product(obj: any): TradeProduct | "" {
+export function parse_trade_product(obj: any): TradeProduct | undefined {
 	if (typeof obj !== 'object' || !obj) return undefined;
-	const { id, created_at, key, process, lot, profile, year, qty_amt, qty_unit, qty_label, qty_avail, price_amt, price_currency, price_qty_amt, price_qty_unit, notes } = obj;
-	if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof key !== "string" || !key) || (typeof year !== "number") || (typeof qty_amt !== "number") || (typeof qty_unit !== "string" || !qty_unit) || (typeof qty_label !== "string" || !qty_label) || (typeof qty_avail !== "number") || (typeof price_amt !== "number") || (typeof price_currency !== "string" || !price_currency) || (typeof price_qty_amt !== "number") || (typeof price_qty_unit !== "string" || !price_qty_unit)) return "";
+	const { id, created_at, key, year, qty_amt, qty_unit, qty_label, qty_avail, price_amt, price_currency, price_qty_amt, price_qty_unit } = obj;
+	if ((typeof key !== "string" || !key) || (typeof year !== "number") || (typeof qty_amt !== "number") || (typeof qty_unit !== "string" || !qty_unit) || (typeof qty_label !== "string" || !qty_label) || (typeof qty_avail !== "number") || (typeof price_amt !== "number") || (typeof price_currency !== "string" || !price_currency) || (typeof price_qty_amt !== "number") || (typeof price_qty_unit !== "string" || !price_qty_unit)) return undefined;
 	return {
 		id,
 		created_at,

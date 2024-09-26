@@ -26,10 +26,10 @@ export const location_gcs_sort: Record<ILocationGcsSort, string> = {
 	oldest: "created_at ASC",
 };
 
-export function parse_location_gcs(obj: any): LocationGcs | "" {
+export function parse_location_gcs(obj: any): LocationGcs | undefined {
 	if (typeof obj !== 'object' || !obj) return undefined;
 	const { id, created_at, lat, lng, geohash, label } = obj;
-	if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof lat !== "number") || (typeof lng !== "number") || (typeof geohash !== "string" || !geohash) || (typeof label !== "string" || !label)) return "";
+	if ((typeof lat !== "number") || (typeof lng !== "number") || (typeof geohash !== "string" || !geohash) || (typeof label !== "string" || !label)) return undefined;
 	return {
 		id,
 		created_at,

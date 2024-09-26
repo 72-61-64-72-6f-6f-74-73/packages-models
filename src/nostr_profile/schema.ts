@@ -36,10 +36,10 @@ export const nostr_profile_sort: Record<INostrProfileSort, string> = {
 	oldest: "created_at ASC",
 };
 
-export function parse_nostr_profile(obj: any): NostrProfile | "" {
+export function parse_nostr_profile(obj: any): NostrProfile | undefined {
 	if (typeof obj !== 'object' || !obj) return undefined;
 	const { id, created_at, public_key } = obj;
-	if ((typeof id !== "string" || !id) || (typeof created_at !== "string" || !created_at) || (typeof public_key !== "string" || !public_key)) return "";
+	if ((typeof public_key !== "string" || !public_key)) return undefined;
 	return {
 		id,
 		created_at,
