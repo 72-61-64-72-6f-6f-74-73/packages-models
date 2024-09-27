@@ -1,9 +1,9 @@
 export type IModelsQueryValue = string | number | boolean;
 export type IModelsQueryBindValue = string | number | boolean | null;
 export type IModelsQueryBindValueTuple = [string, IModelsQueryBindValue];
-export type IModelsQueryBindValueOpt = (IModelsQueryBindValue[] | null)
+export type IModelsQueryBindValueOpt = ( | null)
 export type IModelsSortCreatedAt = 'newest' | 'oldest';
-export type IModelsQueryParam = { query: string; bind_values: IModelsQueryBindValueOpt };
+export type IModelsQueryParam = { query: string; bind_values: IModelsQueryBindValue[] };
 export type IModelsFormErrorTuple = [boolean, string];
 export type IModelsFormValidationTuple = [RegExp, string];
 export type IModelsForm = {
