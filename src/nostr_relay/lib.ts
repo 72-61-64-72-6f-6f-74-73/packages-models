@@ -165,17 +165,3 @@ export const parse_nostr_relay_form_fields = ([k, v]: [string, string]): [string
 			throw new Error("Error: parse_nostr_relay_form_fields did not match.");
 	};
 };
-
-export const nostr_relay_table = `CREATE TABLE IF NOT EXISTS nostr_relay (
-	id CHAR(36) PRIMARY KEY NOT NULL UNIQUE CHECK(length(id) = 36),
-	created_at DATETIME NOT NULL CHECK(length(created_at) = 24),
-	url TEXT NOT NULL UNIQUE,
-	name TEXT,
-	description TEXT,
-	pubkey TEXT,
-	contact TEXT,
-	supported_nips TEXT,
-	software TEXT,
-	version TEXT,
-	data TEXT
-);`;

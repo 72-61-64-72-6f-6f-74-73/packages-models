@@ -111,12 +111,3 @@ export const parse_location_gcs_form_fields = ([k, v]: [string, string]): [strin
 			throw new Error("Error: parse_location_gcs_form_fields did not match.");
 	};
 };
-
-export const location_gcs_table = `CREATE TABLE IF NOT EXISTS location_gcs (
-	id CHAR(36) PRIMARY KEY NOT NULL UNIQUE CHECK(length(id) = 36),
-	created_at DATETIME NOT NULL CHECK(length(created_at) = 24),
-	lat FLOAT NOT NULL,
-	lng FLOAT NOT NULL,
-	geohash CHAR(12) NOT NULL UNIQUE,
-	label TEXT
-);`;
