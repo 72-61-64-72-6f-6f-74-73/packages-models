@@ -4,6 +4,7 @@ import type { IModelsForm, IModelsQueryBindValue, IModelsQueryValue, IModelsSort
 
 export const NostrRelaySchema = z.object({
 	url: z.string({ message: "model.nostr_relay.schema.url.required" }).url().regex(/^(ws|wss):\/\//),
+	relay_id: z.string().optional(),
 	name: z.string().optional(),
 	description: z.string().optional(),
 	pubkey: z.string().optional(),
@@ -16,6 +17,7 @@ export const NostrRelaySchema = z.object({
 
 export const NostrRelayUpdateSchema = z.object({
 	url: z.string({ message: "model.nostr_relay.schema.url.required" }).url().regex(/^(ws|wss):\/\//).optional(),
+	relay_id: z.string().optional(),
 	name: z.string().optional(),
 	description: z.string().optional(),
 	pubkey: z.string().optional(),
@@ -51,6 +53,7 @@ export function parse_nostr_relay(obj: any): NostrRelay | undefined {
 		id,
 		created_at,
 		url,
+		relay_id: typeof obj.relay_id === "string" ? obj.relay_id : undefined,
 		name: typeof obj.name === "string" ? obj.name : undefined,
 		description: typeof obj.description === "string" ? obj.description : undefined,
 		pubkey: typeof obj.pubkey === "string" ? obj.pubkey : undefined,
@@ -77,6 +80,11 @@ export const nostr_relay_form_fields: Record<keyof NostrRelayFormFields, IModels
 		validation: regex.alphanum,
 		charset: regex.alphanum,
 		optional: false,
+	},
+	relay_id: {
+		validation: regex.alphanum,
+		charset: regex.alphanum,
+		optional: true,
 	},
 	name: {
 		validation: regex.alphanum,
@@ -122,6 +130,7 @@ export const nostr_relay_form_fields: Record<keyof NostrRelayFormFields, IModels
 
 export const nostr_relay_form_vals: Record<keyof NostrRelayFormFields, string> = {
 	url: "",
+	relay_id: "",
 	name: "",
 	description: "",
 	pubkey: "",
@@ -135,6 +144,7 @@ export const nostr_relay_form_vals: Record<keyof NostrRelayFormFields, string> =
 export const parse_nostr_relay_form_keys = (value: string): keyof NostrRelayFormFields | "" => {
 	switch (value) {
 		case "url":
+		case "relay_id":
 		case "name":
 		case "description":
 		case "pubkey":
@@ -152,6 +162,7 @@ export const parse_nostr_relay_form_keys = (value: string): keyof NostrRelayForm
 export const parse_nostr_relay_form_fields = ([k, v]: [string, string]): [string, IModelsQueryValue] => {
 	switch (k) {
 		case "url":
+		case "relay_id":
 		case "name":
 		case "description":
 		case "pubkey":
