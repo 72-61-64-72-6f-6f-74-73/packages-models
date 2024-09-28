@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+export type ModelsUniqueConstraintMessages =
+    | "*-location-gcs-geohash-unique"
+	| "*-nostr-relay-url-unique"
+
 export const MassUnitSchema = z.union([
 	z.literal("kg"),
 	z.literal("lb"),

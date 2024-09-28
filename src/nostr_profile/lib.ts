@@ -28,9 +28,9 @@ export type NostrProfileFormFields = { [K in keyof NostrProfileFields]: string; 
 export type NostrProfile = { id: string; created_at: string; } & NostrProfileFields;
 
 export type INostrProfileSort = IModelsSortCreatedAt;
-export type INostrProfileQueryBindValuesKey = "public_key" | "nip05";
+export type INostrProfileQueryBindValuesKey = "id" | "public_key";
 export type INostrProfileQueryBindValuesTuple = [INostrProfileQueryBindValuesKey, IModelsQueryBindValue];
-export type INostrProfileQueryBindValues = { public_key: IModelsQueryBindValue } | { nip05: IModelsQueryBindValue };
+export type INostrProfileQueryBindValues = { id: IModelsQueryBindValue } | { public_key: IModelsQueryBindValue };
 export type INostrProfileGetList = { list: ["all"], sort?: INostrProfileSort };
 export type INostrProfileGet = INostrProfileQueryBindValues | INostrProfileGetList;
 export type INostrProfileUpdate = { on: INostrProfileQueryBindValues, fields: Partial<NostrProfileFormFields>; };
