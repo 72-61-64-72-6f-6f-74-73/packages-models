@@ -5,7 +5,13 @@ export const location_gcs_table = `CREATE TABLE IF NOT EXISTS location_gcs (
 	lat FLOAT NOT NULL,
 	lng FLOAT NOT NULL,
 	geohash CHAR(12) NOT NULL UNIQUE,
-	label TEXT
+	label TEXT,
+	gc_id TEXT,
+	gc_name TEXT,
+	gc_admin1_id TEXT,
+	gc_admin1_name TEXT,
+	gc_country_id TEXT,
+	gc_country_name TEXT
 );`;
 
 export const trade_product_table_drop = `DROP TABLE IF EXISTS trade_product;`

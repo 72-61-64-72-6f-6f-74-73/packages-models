@@ -7,6 +7,12 @@ export const LocationGcsSchema = z.object({
 	lng: z.number({ message: "model.location_gcs.schema.lng.required" }).min(-180, { message: "model.location_gcs.schema.lng.min" }).max(180, { message: "model.location_gcs.schema.lng.max" }),
 	geohash: z.string({ message: "model.location_gcs.schema.geohash.required" }),
 	label: z.string({ message: "model.location_gcs.schema.label.required" }),
+	gc_id: z.string().optional(),
+	gc_name: z.string().optional(),
+	gc_admin1_id: z.string().optional(),
+	gc_admin1_name: z.string().optional(),
+	gc_country_id: z.string().optional(),
+	gc_country_name: z.string().optional(),
 });
 
 export const LocationGcsUpdateSchema = z.object({
@@ -14,6 +20,12 @@ export const LocationGcsUpdateSchema = z.object({
 	lng: z.number({ message: "model.location_gcs.schema.lng.required" }).min(-180, { message: "model.location_gcs.schema.lng.min" }).max(180, { message: "model.location_gcs.schema.lng.max" }).optional(),
 	geohash: z.string({ message: "model.location_gcs.schema.geohash.required" }).optional(),
 	label: z.string({ message: "model.location_gcs.schema.label.required" }).optional(),
+	gc_id: z.string().optional(),
+	gc_name: z.string().optional(),
+	gc_admin1_id: z.string().optional(),
+	gc_admin1_name: z.string().optional(),
+	gc_country_id: z.string().optional(),
+	gc_country_name: z.string().optional(),
 });
 
 export type LocationGcsFields = z.infer<typeof LocationGcsSchema>;
@@ -43,7 +55,13 @@ export function parse_location_gcs(obj: any): LocationGcs | undefined {
 		lat,
 		lng,
 		geohash,
-		label
+		label,
+		gc_id: typeof obj.gc_id === "string" ? obj.gc_id : undefined,
+		gc_name: typeof obj.gc_name === "string" ? obj.gc_name : undefined,
+		gc_admin1_id: typeof obj.gc_admin1_id === "string" ? obj.gc_admin1_id : undefined,
+		gc_admin1_name: typeof obj.gc_admin1_name === "string" ? obj.gc_admin1_name : undefined,
+		gc_country_id: typeof obj.gc_country_id === "string" ? obj.gc_country_id : undefined,
+		gc_country_name: typeof obj.gc_country_name === "string" ? obj.gc_country_name : undefined
 	};
 };
 
@@ -78,6 +96,36 @@ export const location_gcs_form_fields: Record<keyof LocationGcsFormFields, IMode
 		charset: regex.alphanum,
 		optional: false,
 	},
+	gc_id: {
+		validation: regex.alphanum,
+		charset: regex.alphanum,
+		optional: true,
+	},
+	gc_name: {
+		validation: regex.alphanum,
+		charset: regex.alphanum,
+		optional: true,
+	},
+	gc_admin1_id: {
+		validation: regex.alphanum,
+		charset: regex.alphanum,
+		optional: true,
+	},
+	gc_admin1_name: {
+		validation: regex.alphanum,
+		charset: regex.alphanum,
+		optional: true,
+	},
+	gc_country_id: {
+		validation: regex.alphanum,
+		charset: regex.alphanum,
+		optional: true,
+	},
+	gc_country_name: {
+		validation: regex.alphanum,
+		charset: regex.alphanum,
+		optional: true,
+	},
 };
 
 export const location_gcs_form_vals: Record<keyof LocationGcsFormFields, string> = {
@@ -85,6 +133,12 @@ export const location_gcs_form_vals: Record<keyof LocationGcsFormFields, string>
 	lng: "",
 	geohash: "",
 	label: "",
+	gc_id: "",
+	gc_name: "",
+	gc_admin1_id: "",
+	gc_admin1_name: "",
+	gc_country_id: "",
+	gc_country_name: "",
 };
 
 export const parse_location_gcs_form_keys = (value: string): keyof LocationGcsFormFields | "" => {
@@ -93,6 +147,12 @@ export const parse_location_gcs_form_keys = (value: string): keyof LocationGcsFo
 		case "lng":
 		case "geohash":
 		case "label":
+		case "gc_id":
+		case "gc_name":
+		case "gc_admin1_id":
+		case "gc_admin1_name":
+		case "gc_country_id":
+		case "gc_country_name":
 			return value;
 		default:
 			return "";
@@ -103,6 +163,12 @@ export const parse_location_gcs_form_fields = ([k, v]: [string, string]): [strin
 	switch (k) {
 		case "geohash":
 		case "label":
+		case "gc_id":
+		case "gc_name":
+		case "gc_admin1_id":
+		case "gc_admin1_name":
+		case "gc_country_id":
+		case "gc_country_name":
 			return [k, String(v)];
 		case "lat":
 		case "lng":
