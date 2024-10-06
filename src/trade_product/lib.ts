@@ -5,6 +5,8 @@ import { MassUnitSchema, parse_mass_unit } from "../utils";
 
 export const TradeProductSchema = z.object({
 	key: z.string({ message: "model.trade_product.schema.key.required" }),
+	title: z.string({ message: "model.trade_product.schema.title.required" }),
+	summary: z.string({ message: "model.trade_product.schema.summary.required" }),
 	process: z.string().optional(),
 	lot: z.string().min(1, { message: "model.trade_product.schema.lot.min" }).max(120, { message: "model.trade_product.schema.lot.max" }).optional(),
 	profile: z.string().optional(),
@@ -22,6 +24,8 @@ export const TradeProductSchema = z.object({
 
 export const TradeProductUpdateSchema = z.object({
 	key: z.string({ message: "model.trade_product.schema.key.required" }).optional(),
+	title: z.string({ message: "model.trade_product.schema.title.required" }).optional(),
+	summary: z.string({ message: "model.trade_product.schema.summary.required" }).optional(),
 	process: z.string().optional(),
 	lot: z.string().min(1, { message: "model.trade_product.schema.lot.min" }).max(120, { message: "model.trade_product.schema.lot.max" }).optional(),
 	profile: z.string().optional(),
@@ -56,12 +60,14 @@ export const trade_product_sort: Record<ITradeProductSort, string> = {
 
 export function parse_trade_product(obj: any): TradeProduct | undefined {
 	if (typeof obj !== 'object' || !obj) return undefined;
-	const { id, created_at, key, year, qty_amt, qty_unit, qty_label, qty_avail, price_amt, price_currency, price_qty_amt, price_qty_unit } = obj;
-	if ((typeof key !== "string" || !key) || (typeof year !== "number") || (typeof qty_amt !== "number") || (typeof qty_unit !== "string" || !qty_unit) || (typeof qty_label !== "string" || !qty_label) || (typeof qty_avail !== "number") || (typeof price_amt !== "number") || (typeof price_currency !== "string" || !price_currency) || (typeof price_qty_amt !== "number") || (typeof price_qty_unit !== "string" || !price_qty_unit)) return undefined;
+	const { id, created_at, key, title, summary, year, qty_amt, qty_unit, qty_label, qty_avail, price_amt, price_currency, price_qty_amt, price_qty_unit } = obj;
+	if ((typeof key !== "string" || !key) || (typeof title !== "string" || !title) || (typeof summary !== "string" || !summary) || (typeof year !== "number") || (typeof qty_amt !== "number") || (typeof qty_unit !== "string" || !qty_unit) || (typeof qty_label !== "string" || !qty_label) || (typeof qty_avail !== "number") || (typeof price_amt !== "number") || (typeof price_currency !== "string" || !price_currency) || (typeof price_qty_amt !== "number") || (typeof price_qty_unit !== "string" || !price_qty_unit)) return undefined;
 	return {
 		id,
 		created_at,
 		key,
+		title,
+		summary,
 		process: typeof obj.process === "string" ? obj.process : undefined,
 		lot: typeof obj.lot === "string" ? obj.lot : undefined,
 		profile: typeof obj.profile === "string" ? obj.profile : undefined,
@@ -90,6 +96,16 @@ export const parse_trade_product_list = ({ values }: { values?: any[] }): TradeP
 
 export const trade_product_form_fields: Record<keyof TradeProductFormFields, IModelsForm> = {
 	key: {
+		validation: regex.alphanum,
+		charset: regex.alphanum,
+		optional: false,
+	},
+	title: {
+		validation: regex.alphanum,
+		charset: regex.alphanum,
+		optional: false,
+	},
+	summary: {
 		validation: regex.alphanum,
 		charset: regex.alphanum,
 		optional: false,
@@ -169,6 +185,8 @@ export const trade_product_form_fields: Record<keyof TradeProductFormFields, IMo
 
 export const trade_product_form_vals: Record<keyof TradeProductFormFields, string> = {
 	key: "",
+	title: "",
+	summary: "",
 	process: "",
 	lot: "",
 	profile: "",
@@ -187,6 +205,8 @@ export const trade_product_form_vals: Record<keyof TradeProductFormFields, strin
 export const parse_trade_product_form_keys = (value: string): keyof TradeProductFormFields | "" => {
 	switch (value) {
 		case "key":
+		case "title":
+		case "summary":
 		case "process":
 		case "lot":
 		case "profile":
@@ -209,6 +229,8 @@ export const parse_trade_product_form_keys = (value: string): keyof TradeProduct
 export const parse_trade_product_form_fields = ([k, v]: [string, string]): [string, IModelsQueryValue] => {
 	switch (k) {
 		case "key":
+		case "title":
+		case "summary":
 		case "process":
 		case "lot":
 		case "profile":

@@ -13,6 +13,8 @@ export const trade_product_table = `CREATE TABLE IF NOT EXISTS trade_product (
 	id CHAR(36) PRIMARY KEY NOT NULL UNIQUE CHECK(length(id) = 36),
 	created_at DATETIME NOT NULL CHECK(length(created_at) = 24),
 	key TEXT,
+	title TEXT,
+	summary TEXT,
 	process TEXT,
 	lot TEXT,
 	profile TEXT,

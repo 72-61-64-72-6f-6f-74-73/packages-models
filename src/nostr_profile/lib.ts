@@ -31,7 +31,7 @@ export type INostrProfileSort = IModelsSortCreatedAt;
 export type INostrProfileQueryBindValuesKey = "id" | "public_key";
 export type INostrProfileQueryBindValuesTuple = [INostrProfileQueryBindValuesKey, IModelsQueryBindValue];
 export type INostrProfileQueryBindValues = { id: IModelsQueryBindValue } | { public_key: IModelsQueryBindValue };
-export type INostrProfileGetList = { list: ["all"], sort?: INostrProfileSort };
+export type INostrProfileGetList = { list: ["all"] | ["on_relay", { id: string;  }] | ["off_relay", { id: string;  }], sort?: INostrProfileSort };
 export type INostrProfileGet = INostrProfileQueryBindValues | INostrProfileGetList;
 export type INostrProfileUpdate = { on: INostrProfileQueryBindValues, fields: Partial<NostrProfileFormFields>; };
 
