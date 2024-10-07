@@ -1,6 +1,6 @@
-import { regex } from "@radroots/utils";
+import { type ErrorMessage, regex, type ResultId,type ResultsList } from "@radroots/utils";
 import { z } from "zod";
-import type { IModelsForm, IModelsQueryBindValue, IModelsQueryValue, IModelsSortCreatedAt } from "../types";
+import type { IModelsForm, IModelsQueryBindValue, IModelsQueryValue, IModelsSchemaErrors, IModelsSortCreatedAt } from "../types";
 
 export const NostrProfileSchema = z.object({
 	public_key: z.string({ message: "model.nostr_profile.schema.public_key.required" }).length(64, { message: "model.nostr_profile.schema.public_key.length" }),
@@ -35,6 +35,11 @@ export type INostrProfileGetList = { list: ["all"] | ["on_relay", { id: string; 
 export type INostrProfileGet = INostrProfileQueryBindValues | INostrProfileGetList;
 export type INostrProfileUpdate = { on: INostrProfileQueryBindValues, fields: Partial<NostrProfileFormFields>; };
 
+export type INostrProfileAddResolve<T extends string> = ResultId | IModelsSchemaErrors | ErrorMessage<T>;
+export type INostrProfileDeleteResolve<T extends string> = true | ErrorMessage<T>;
+export type INostrProfileGetResolve<T extends string> = ResultsList<NostrProfile> | ErrorMessage<T>;
+export type INostrProfileUpdateResolve<T extends string> = true | IModelsSchemaErrors | ErrorMessage<T>;
+
 export const nostr_profile_sort: Record<INostrProfileSort, string> = {
 	newest: "created_at DESC",
 	oldest: "created_at ASC",
@@ -61,7 +66,8 @@ export function parse_nostr_profile(obj: any): NostrProfile | undefined {
 };
 
 export const parse_nostr_profile_list = ({ values }: { values?: any[] }): NostrProfile[] | undefined => {
-	if (!Array.isArray(values) || !values.length) return undefined;
+	if (!Array.isArray(values)) return undefined;
+	else if (!values.length) return [];
 	const list: NostrProfile[] = [];
 	for (const obj of values) {
 		const o = parse_nostr_profile(obj);

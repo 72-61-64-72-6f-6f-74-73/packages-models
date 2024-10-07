@@ -1,6 +1,6 @@
-import { regex } from "@radroots/utils";
+import { type ErrorMessage, regex, type ResultId,type ResultsList } from "@radroots/utils";
 import { z } from "zod";
-import type { IModelsForm, IModelsQueryBindValue, IModelsQueryValue, IModelsSortCreatedAt } from "../types";
+import type { IModelsForm, IModelsQueryBindValue, IModelsQueryValue, IModelsSchemaErrors, IModelsSortCreatedAt } from "../types";
 import { MassUnitSchema, parse_mass_unit } from "../utils";
 
 export const TradeProductSchema = z.object({
@@ -46,12 +46,17 @@ export type TradeProductFormFields = { [K in keyof TradeProductFields]: string; 
 export type TradeProduct = { id: string; created_at: string; } & TradeProductFields;
 
 export type ITradeProductSort = IModelsSortCreatedAt;
-export type ITradeProductQueryBindValuesKey = "id" | "url";
+export type ITradeProductQueryBindValuesKey = "id";
 export type ITradeProductQueryBindValuesTuple = [ITradeProductQueryBindValuesKey, IModelsQueryBindValue];
-export type ITradeProductQueryBindValues = { id: IModelsQueryBindValue } | { url: IModelsQueryBindValue };
+export type ITradeProductQueryBindValues = { id: IModelsQueryBindValue };
 export type ITradeProductGetList = { list: ["all"], sort?: ITradeProductSort };
 export type ITradeProductGet = ITradeProductQueryBindValues | ITradeProductGetList;
 export type ITradeProductUpdate = { on: ITradeProductQueryBindValues, fields: Partial<TradeProductFormFields>; };
+
+export type ITradeProductAddResolve<T extends string> = ResultId | IModelsSchemaErrors | ErrorMessage<T>;
+export type ITradeProductDeleteResolve<T extends string> = true | ErrorMessage<T>;
+export type ITradeProductGetResolve<T extends string> = ResultsList<TradeProduct> | ErrorMessage<T>;
+export type ITradeProductUpdateResolve<T extends string> = true | IModelsSchemaErrors | ErrorMessage<T>;
 
 export const trade_product_sort: Record<ITradeProductSort, string> = {
 	newest: "created_at DESC",
@@ -85,7 +90,8 @@ export function parse_trade_product(obj: any): TradeProduct | undefined {
 };
 
 export const parse_trade_product_list = ({ values }: { values?: any[] }): TradeProduct[] | undefined => {
-	if (!Array.isArray(values) || !values.length) return undefined;
+	if (!Array.isArray(values)) return undefined;
+	else if (!values.length) return [];
 	const list: TradeProduct[] = [];
 	for (const obj of values) {
 		const o = parse_trade_product(obj);

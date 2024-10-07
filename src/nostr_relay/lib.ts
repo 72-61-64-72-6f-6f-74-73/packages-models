@@ -1,6 +1,6 @@
-import { regex } from "@radroots/utils";
+import { type ErrorMessage, regex, type ResultId,type ResultsList } from "@radroots/utils";
 import { z } from "zod";
-import type { IModelsForm, IModelsQueryBindValue, IModelsQueryValue, IModelsSortCreatedAt } from "../types";
+import type { IModelsForm, IModelsQueryBindValue, IModelsQueryValue, IModelsSchemaErrors, IModelsSortCreatedAt } from "../types";
 
 export const NostrRelaySchema = z.object({
 	url: z.string({ message: "model.nostr_relay.schema.url.required" }).url().regex(/^(ws|wss):\/\//),
@@ -40,6 +40,11 @@ export type INostrRelayGetList = { list: ["all"] | ["on_profile", { public_key: 
 export type INostrRelayGet = INostrRelayQueryBindValues | INostrRelayGetList;
 export type INostrRelayUpdate = { on: INostrRelayQueryBindValues, fields: Partial<NostrRelayFormFields>; };
 
+export type INostrRelayAddResolve<T extends string> = ResultId | IModelsSchemaErrors | ErrorMessage<T>;
+export type INostrRelayDeleteResolve<T extends string> = true | ErrorMessage<T>;
+export type INostrRelayGetResolve<T extends string> = ResultsList<NostrRelay> | ErrorMessage<T>;
+export type INostrRelayUpdateResolve<T extends string> = true | IModelsSchemaErrors | ErrorMessage<T>;
+
 export const nostr_relay_sort: Record<INostrRelaySort, string> = {
 	newest: "created_at DESC",
 	oldest: "created_at ASC",
@@ -66,7 +71,8 @@ export function parse_nostr_relay(obj: any): NostrRelay | undefined {
 };
 
 export const parse_nostr_relay_list = ({ values }: { values?: any[] }): NostrRelay[] | undefined => {
-	if (!Array.isArray(values) || !values.length) return undefined;
+	if (!Array.isArray(values)) return undefined;
+	else if (!values.length) return [];
 	const list: NostrRelay[] = [];
 	for (const obj of values) {
 		const o = parse_nostr_relay(obj);
