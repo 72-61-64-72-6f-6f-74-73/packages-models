@@ -1,4 +1,4 @@
-import { type ErrorMessage, regex, type ResultId,type ResultsList } from "@radroots/utils";
+import { type ErrorMessage, regex, type ResultId, type ResultsList } from "@radroots/utils";
 import { z } from "zod";
 import type { IModelsForm, IModelsQueryBindValue, IModelsQueryValue, IModelsSchemaErrors, IModelsSortCreatedAt } from "../types";
 
@@ -31,7 +31,7 @@ export type INostrProfileSort = IModelsSortCreatedAt;
 export type INostrProfileQueryBindValuesKey = "id" | "public_key";
 export type INostrProfileQueryBindValuesTuple = [INostrProfileQueryBindValuesKey, IModelsQueryBindValue];
 export type INostrProfileQueryBindValues = { id: IModelsQueryBindValue } | { public_key: IModelsQueryBindValue };
-export type INostrProfileGetList = { list: ["all"] | ["on_relay", { id: string;  }] | ["off_relay", { id: string;  }], sort?: INostrProfileSort };
+export type INostrProfileGetList = { list: ["all"] | ["on_relay", { id: string; }] | ["off_relay", { id: string; }], sort?: INostrProfileSort };
 export type INostrProfileGet = INostrProfileQueryBindValues | INostrProfileGetList;
 export type INostrProfileUpdate = { on: INostrProfileQueryBindValues, fields: Partial<NostrProfileFormFields>; };
 
@@ -84,7 +84,7 @@ export const nostr_profile_form_fields: Record<keyof NostrProfileFormFields, IMo
 	},
 	name: {
 		validation: regex.profile_name,
-		charset: regex.profile_name_char,
+		charset: regex.profile_name_ch,
 		optional: true,
 	},
 	display_name: {

@@ -1,4 +1,4 @@
-import { type ErrorMessage, regex, type ResultId,type ResultsList } from "@radroots/utils";
+import { type ErrorMessage, regex, type ResultId, type ResultsList } from "@radroots/utils";
 import { z } from "zod";
 import type { IModelsForm, IModelsQueryBindValue, IModelsQueryValue, IModelsSchemaErrors, IModelsSortCreatedAt } from "../types";
 
@@ -36,7 +36,7 @@ export type INostrRelaySort = IModelsSortCreatedAt;
 export type INostrRelayQueryBindValuesKey = "id" | "url";
 export type INostrRelayQueryBindValuesTuple = [INostrRelayQueryBindValuesKey, IModelsQueryBindValue];
 export type INostrRelayQueryBindValues = { id: IModelsQueryBindValue } | { url: IModelsQueryBindValue };
-export type INostrRelayGetList = { list: ["all"] | ["on_profile", { public_key: string;  }] | ["off_profile", { public_key: string;  }], sort?: INostrRelaySort };
+export type INostrRelayGetList = { list: ["all"] | ["on_profile", { public_key: string; }] | ["off_profile", { public_key: string; }], sort?: INostrRelaySort };
 export type INostrRelayGet = INostrRelayQueryBindValues | INostrRelayGetList;
 export type INostrRelayUpdate = { on: INostrRelayQueryBindValues, fields: Partial<NostrRelayFormFields>; };
 

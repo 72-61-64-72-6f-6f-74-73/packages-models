@@ -1,4 +1,4 @@
-import { type ErrorMessage, regex, type ResultId,type ResultsList } from "@radroots/utils";
+import { type ErrorMessage, regex, type ResultId, type ResultsList } from "@radroots/utils";
 import { z } from "zod";
 import type { IModelsForm, IModelsQueryBindValue, IModelsQueryValue, IModelsSchemaErrors, IModelsSortCreatedAt } from "../types";
 import { MassUnitSchema, parse_mass_unit } from "../utils";
@@ -160,7 +160,7 @@ export const trade_product_form_fields: Record<keyof TradeProductFormFields, IMo
 	},
 	price_amt: {
 		validation: regex.price,
-		charset: regex.price_charset,
+		charset: regex.price_ch,
 		optional: false,
 		default: 1,
 	},
